@@ -31,7 +31,7 @@ class ScriptRunner:
         Take this python code, and fix any indentation or any obvious langauge bugs. Dont change the functionality.
         Return revised code only, no other prefix or suffix. The code should be able to go into an eval statement and run successfully. 
         
-        If we want to run a binary file, we need to compile it first. The file is located in {file_path}
+        If we want to run a binary file, The file is located in {file_path}
         Code:
         {script_code}
 

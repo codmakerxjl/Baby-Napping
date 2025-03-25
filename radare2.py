@@ -7,20 +7,20 @@ from typing import List, Dict, Union, Optional, Literal
 class R2:
     def __init__(self, timeout: int = 60):
         """
-        初始化radare2执行器
-        :param timeout: 命令执行超时时间（秒）
+        Initialize the radare2 executor
+        :param timeout: Command execution timeout(in seconds)
         """
         self.timeout = timeout
         self._verify_r2()
 
     def _verify_r2(self):
-        """验证radare2安装"""
+        """Verify radare2 installation"""
         try:
             subprocess.run(['r2', '-qv'], check=True, 
                           stdout=subprocess.PIPE, 
                           stderr=subprocess.PIPE)
         except (FileNotFoundError, subprocess.CalledProcessError):
-            raise RuntimeError("radare2未安装或版本过低，需要v5.8.0+")
+            raise RuntimeError("radare2 is not installed or the version is too low, v5.8.0+ is required.")
 
     def _create_script(self, commands: List[str], output_format: str) -> str:
         """
@@ -48,16 +48,16 @@ class R2:
                output_format: Literal['raw', 'json', 'text'] = 'raw',
                input_args: Optional[List[str]] = None) -> Union[str, dict]:
         """
-        执行radare2命令并返回结构化结果
-        :param file_path: 目标文件路径
-        :param commands: 要执行的r2命令（字符串或列表）
-        :param output_format: 返回格式要求
-            - raw: 原始输出
-            - json: 自动解析JSON
-            - text: 清理后的文本
-        :param input_args: 传递给程序的命令行参数
+        Execute radare2 commands and return structured results
+        :param file_path: Path to the target file
+        :param commands: r2 commands to execute (string or list)
+        :param output_format: Return format requirements
+        - raw: Raw output
+        - json: Automatically parsed JSON
+        - text: Cleaned text
+        :param input_args: Command-line arguments passed to the program
         """
-        # 参数标准化
+        # Parameter standardization.
         commands = "aaa;"+commands
         cmd_list = [commands] if isinstance(commands, str) else commands
         script = self._create_script(cmd_list, output_format)
@@ -67,12 +67,12 @@ class R2:
             script_path = f.name
 
         try:
-            # 构建执行命令
+            # Build execution command
             base_cmd = ['r2', '-e', 'bin.cache=true', '-q']
             if input_args:
-                base_cmd += ['-d', '--']  # 调试模式允许传递参数
+                base_cmd += ['-d', '--']  # Debug mode allows passing parameters.
             else:
-                base_cmd += []  # 无执行模式
+                base_cmd += []  # No execution mode.
             
             full_cmd = base_cmd + ['-i', script_path, file_path]
             if input_args:
@@ -86,7 +86,7 @@ class R2:
                 check=True
             )
 
-            # 处理输出
+            # Process the output.
             raw_output = result.stdout.decode('utf-8', errors='ignore')
             if commands == "aaa;aaa":
                 raw_output = "success execute aaa"
@@ -100,15 +100,15 @@ class R2:
             return raw_output
 
         except subprocess.CalledProcessError as e:
-            error_msg = f"命令执行失败: {e.stderr.decode()}"
+            error_msg = f"Command execution failed: {e.stderr.decode()}"
             raise RuntimeError(error_msg)
         except subprocess.TimeoutExpired:
-            raise RuntimeError(f"分析超时（{self.timeout}秒）")
+            raise RuntimeError(f"Analysis timeout{self.timeout}second）")
         finally:
             os.remove(script_path)
 
     def _parse_json_output(self, raw: str) -> dict:
-        """智能解析混合JSON输出"""
+        """Intelligently parse mixed JSON output"""
         json_objects = []
         decoder = json.JSONDecoder()
         
@@ -122,18 +122,18 @@ class R2:
                 break
                 
         if not json_objects:
-            raise ValueError("未找到有效JSON数据")
+            raise ValueError("No valid JSON data found.")
             
-        # 合并多个JSON对象
+        # Merge multiple JSON objects
         if len(json_objects) == 1:
             return json_objects[0]
         return {'results': json_objects}
 
     def _clean_text_output(self, raw: str) -> str:
-        """清理文本输出"""
+        """Clean text output."""
         lines = []
         for line in raw.split('\n'):
-            # 过滤r2日志信息
+            # Filter r2 log messages.
             if line.startswith(('[0x', 'Cannot find', 'WARNING')):
                 continue
             lines.append(line.strip())
@@ -150,8 +150,8 @@ if __name__ == "__main__":
 
     # 示例2：反汇编函数（文本）
     disasm = r2.execute(
-        "code/vuln_server",
-        commands="aaa",
+        "code/vuln",
+        commands="aaa;afl; pdf @sym.process_input",
         output_format='text'
     )
     print(disasm)  # 输出前500字符

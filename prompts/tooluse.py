@@ -19,10 +19,10 @@ TOOLUSE_PROMPT = """
         - input_vars: Optional dict of input values to use
         - Returns: Memory/variable state at breakpoint
 
-        3. Script Runner
+        3. Python
         Description: Executes custom Python scripts for testing and exploitation
         Usage: run_script("script_code") 
-        - script_code: Python code to execute,using \n to separate each line, and also include the corresponding import headers.
+        - script_code: Python code to execute,using ; to separate each line, and also include the corresponding import headers.
         - Returns: Script output
         Note: If you want the binary, its situated in {binary_path}. You might find the code in ``` ``` blocks after Command: run_script(). Extract all of it and put inside the run_script(code_goes_here). Code must be inside double quotes. Dont use `. We should be able to put it into an eval statement and run it.
 

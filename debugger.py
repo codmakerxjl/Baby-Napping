@@ -161,7 +161,7 @@ class Debugger:
 '''
 if __name__ == "__main__":
     debugger = Debugger()
-    de=debugger.debug("code/vuln_server",0x0040127a,"buffer, sockfd")
+    de=debugger.debug("code/vuln",0x000010a0,"buffer, sockfd")
 
     
     print(de)  # 输出前500字符'

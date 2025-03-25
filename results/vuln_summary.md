@@ -1,20 +1,21 @@
-# Executive Summary
+# Exploit Report
 
-The binary `vuln` located at `code/vuln` was found to contain a buffer overflow vulnerability in the `sym.process_input` function. By providing a large input, a segmentation fault was triggered, indicating a potential buffer overflow.
+## Executive Summary
+The binary "code/vuln" was found to contain a buffer overflow vulnerability due to the unchecked use of the strcpy function in the process_input function. By providing a crafted input, it was possible to trigger a segmentation fault, confirming the presence of the vulnerability.
 
-# Technical Deep-Dive
+## Technical Deep-Dive
+The vulnerable function process_input in the binary code/vuln uses the strcpy function without proper bounds checking, allowing an attacker to overwrite the buffer and potentially control the program's execution flow. This vulnerability can be exploited by crafting a payload that overflows the buffer and overwrites the return address.
 
-The vulnerable function `sym.process_input` lacked proper input validation, allowing an attacker to input more data than the buffer could hold, leading to a buffer overflow. The absence of proper bounds checking enabled the overwrite of adjacent memory, including the return address on the stack.
+## Detailed Exploitation Methodology
+1. The vulnerable function process_input in the binary code/vuln was identified as the target for exploitation.
+2. A payload was crafted to overflow the buffer and overwrite the return address with a controlled value (e.g., "BBBB").
+3. The exploit script was executed, providing the crafted payload as a command line argument to the binary.
+4. The program crashed with a segmentation fault, indicating a successful exploitation of the buffer overflow vulnerability.
 
-# Exploitation Methodology
+## Proof of Successful Exploitation
+The program crashed with a segmentation fault, confirming the successful exploitation of the buffer overflow vulnerability.
 
-1. Initial testing with a payload of "A" repeated 100 times resulted in a segmentation fault, confirming the presence of a buffer overflow vulnerability.
-2. Crafting a payload with "A" repeated 100 times followed by "B" repeated 8 times to overwrite the return address on the stack.
-3. Executing the payload successfully redirected the program flow, causing a segmentation fault and demonstrating control over the program's execution.
+This concludes the exploitation of the buffer overflow vulnerability in the binary code/vuln.
 
-# Proof of Exploitation
-
-The exploit was successful, as evidenced by the segmentation fault triggered by the crafted payload.
-
-```bash
-$ ./code/vuln AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+---
+This report provides a detailed overview of the discovery and exploitation of a buffer overflow vulnerability in the binary "code/vuln." The vulnerability was successfully exploited to gain control over the program's execution flow.
